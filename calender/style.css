@@ -6,8 +6,15 @@ ul {
   list-style: none;
 }
 li {
-  margin: 10px;
+  /* margin: 10px;
   background-color: blueviolet;
   padding: 5px;
-  color: white;
+  color: white; */
+}
+.days{
+  display: grid;
+  justify-content: space-evenly;
+  grid-template-columns: 10px 10px 10px 10px;
+  gap: 10px;
+ 
 }
