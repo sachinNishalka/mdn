@@ -23,7 +23,7 @@ function randomRGB() {
 }
 
 class Ball {
-  constructor(x, y, velX, velY, color, size) {
+  constructor(x, y, velX, velY, color, size, exists) {
     // where the ball starts in the screen - the x and y coordinates
 
     this.x = x;
@@ -43,6 +43,8 @@ class Ball {
     // the size of the ball and its the radius
 
     this.size = size;
+
+    this.exists = exists;
   }
 
   // the method to draw the ball
@@ -103,7 +105,7 @@ class Ball {
 
   collisionDetection() {
     for (const ball of balls) {
-      if (this != ball) {
+      if (!(this === ball) && ball.exists) {
         const dx = this.x - ball.x;
 
         const dy = this.y - ball.y;
@@ -128,9 +130,83 @@ class Ball {
 
 // storing the balls
 
+class ballEater extends Ball {
+  constructor(x, y, velX, velY, size, color, exists) {
+    super(x, y, velX, velY, size, color, exists);
+    this.color = color;
+    this.x = x;
+    this.y = y;
+    this.velX = velX;
+    this.velY = velY;
+  }
+
+  draw() {
+    // these are some members of the context
+
+    // context is like a paper
+
+    // this will start drawing on the paper
+
+    // this is like a pen
+
+    ctx.beginPath();
+
+    // this will fill the shape with the color
+
+    ctx.strokeStyle = this.color;
+
+    // this is a arc method - it will define the shape of the object
+
+    // x and y are the center of the ball
+
+    // this is the radius of the ball and its size
+
+    // the last property says that the arc begins at 0 degrees and it will continue upto 2* 180 degrees
+
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+
+    // finish the drawing from the start point to the end point and fill the object with the color defined in the fill style
+
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+  }
+  update() {
+    if (this.x + this.size >= width) {
+      this.x = -this.size;
+    }
+
+    if (this.x - this.size <= 0) {
+      this.x = -this.size;
+    }
+
+    if (this.y + this.size >= height) {
+      this.y = -this.size;
+    }
+
+    if (this.y - this.size <= 0) {
+      this.y = -this.size;
+    }
+  }
+  collisionDetection() {
+    for (const ball of balls) {
+      if (ball.exists) {
+        const dx = this.x - ball.x;
+
+        const dy = this.y - ball.y;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this.size + ball.size) {
+          ball.exists = false;
+        }
+      }
+    }
+  }
+}
 const balls = [];
 
-while (balls.length < 250) {
+while (balls.length < 25) {
   const size = random(10, 20);
 
   const ball = new Ball(
@@ -144,7 +220,9 @@ while (balls.length < 250) {
 
     randomRGB(),
 
-    size
+    size,
+
+    true
   );
 
   balls.push(ball);
@@ -173,3 +251,31 @@ function loop() {
 }
 
 loop();
+const eater = new ballEater(50, 100, 20, 20, "white", 10, true);
+eater.draw();
+eater.update();
+eater.collisionDetection();
+
+window.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "a":
+      this.x -= this.valX;
+
+      break;
+
+    case "d":
+      this.x += this.valX;
+
+      break;
+
+    case "w":
+      this.y -= this.valY;
+
+      break;
+
+    case "s":
+      this.y += this.valY;
+
+      break;
+  }
+});
